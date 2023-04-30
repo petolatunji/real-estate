@@ -1,6 +1,9 @@
 import React from 'react'
 import { housesData } from '../data'
 import { useParams, Link } from 'react-router-dom'
+import emailjs from '@emailjs/browser'
+import { useRef } from 'react'
+import { useState, useContext } from 'react'
 
 import { BiBed, BiBath, BiArea } from 'react-icons/bi'
 const PropertyDetails = () => {
@@ -11,7 +14,31 @@ const PropertyDetails = () => {
   const house = housesData.find((house) => {
     return house.id === parseInt(id)
   })
-  console.log(house)
+
+  //emailjs
+  const formRef = useRef()
+  const [done, setDone] = useState(false)
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    emailjs
+      .sendForm(
+        'service_hpo9z1w',
+        'template_1e0ja7l',
+        formRef.current,
+        'GQhEF6oBPCG2WErx3'
+      )
+      .then(
+        (result) => {
+          console.log(result.text)
+          setDone(true)
+        },
+        (error) => {
+          console.log(error.text)
+        }
+      )
+  }
+
   return (
     <section>
       <div className='container mx-auto min-h-[800px] mb-14'>
@@ -68,34 +95,39 @@ const PropertyDetails = () => {
               </div>
             </div>
             {/*form*/}
-            <form className='flex flex-col gap-y-4'>
+            <form
+              className='flex flex-col gap-y-4'
+              ref={formRef}
+              onSubmit={handleSubmit}
+            >
               <input
                 type='text'
                 className='border bg-gray-300 focus:border-violet-700 outline-none rounded w-full px-4 h-10 text-sm '
                 placeholder='Enter your full name*'
+                name='user_name'
               />
               <input
                 type='text'
                 className='border bg-gray-300 focus:border-violet-700 outline-none rounded w-full px-4 h-10 text-sm '
                 placeholder='Enter your email*'
+                name='user_email'
               />
               <input
                 type='text'
                 className='border bg-gray-300 focus:border-violet-700 outline-none rounded w-full px-4 h-10 text-sm '
                 placeholder='Enter your phone number*'
+                name='user_number'
               />
               <textarea
                 placeholder='Message*'
                 className='border bg-gray-300 focus:border-violet-700 outline-none rounded w-full p-4 text-sm resize-none h-40'
+                name='message'
               ></textarea>
-              <div className='flex gap-x-2'>
-                <button className='bg-violet-700 hover:bg-violet-800 text-white rounded p-4 text-sm w-full transition'>
-                  Send message
-                </button>
-                <button className='border-violet-700 hover:border-violet-500 hover:text-violet-500 text-violet-700 border rounded p-4 text-sm w-full transition'>
-                  Call
-                </button>
-              </div>
+
+              <button className='bg-violet-700 hover:bg-violet-800 text-white rounded p-4 text-sm w-full transition'>
+                Send message
+              </button>
+              {done && 'Thanks for contacting us'}
             </form>
           </div>
         </div>
